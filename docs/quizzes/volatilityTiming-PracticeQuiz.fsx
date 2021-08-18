@@ -238,10 +238,6 @@ Given the list below, use `mapFold` to return a tuple of
 (**
 ## Question 10
 Given the list below, use `mapFold` to return a tuple of
-
-1. The list of records with the `Y` field in each record updated to `Y+1`
-2. The sum of the `Y` fields.
-
 *)
 
 type R1 = { X : string; Y : int }
@@ -253,12 +249,15 @@ let r1xs =
       { X = "d"; Y = 2 }
       { X = "e"; Y = -10 }]
 
+(**
+1. The list of records with the `Y` field in each record updated to `Y+1`
+2. The sum of the `Y` fields.
+*)
+
 (*** include-it-raw:preDetails ***)
 (*** define: mapFold3, define-output: mapFold3 ***)
-
 (0, r1xs)
 ||> List.mapFold (fun acc x -> { x with Y = x.Y+1}, acc + x.Y) 
-
 (*** condition:html, include:mapFold3 ***)
 (*** condition:html, include-fsi-output:mapFold3 ***)
 (*** include-it-raw:postDetails ***)

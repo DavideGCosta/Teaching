@@ -63,14 +63,17 @@ let returns =
 
 (**
 ## Question 1
-Take this array of arrays, add `1.0` to each element of the "inner" arrays,
-and then concatenate all the inner arrays together.
 *)
+
 [| [| 1.0; 2.0|]
    [| 3.0; 4.0|] |]
 
-(*** include-it-raw:preDetails ***)
+(**
+Take this array of arrays, add `1.0` to each element of the "inner" arrays,
+and then concatenate all the inner arrays together.
+*)
 
+(*** include-it-raw:preDetails ***)
 (*** define: arraysAdd1, define-output: arraysAdd1 ***)
 [| [| 1.0; 2.0|]
    [| 3.0; 4.0|] |]
@@ -82,14 +85,14 @@ and then concatenate all the inner arrays together.
 or
 *)
 
-(*** define: arraysAdd11, define-output: arraysAdd11 ***)
+(*** define: arraysAdd1Other, define-output: arraysAdd1Other ***)
 [| [| 1.0; 2.0|]
    [| 3.0; 4.0|] |]
 |> Array.map(fun xs -> xs |> Array.map(fun x -> x + 1.0))
 |> Array.concat
 
-(*** condition:html, include:arraysAdd11 ***)
-(*** condition:html, include-fsi-output:arraysAdd11 ***)
+(*** condition:html, include:arraysAdd1Other ***)
+(*** condition:html, include-fsi-output:arraysAdd1Other ***)
 (*** include-it-raw:postDetails ***)
 
 (*** condition:ipynb ***)

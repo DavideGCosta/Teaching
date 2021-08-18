@@ -63,6 +63,7 @@ Create a discriminated union named `Action` with two cases: Buy and Sell.
 type Action = 
     | Buy 
     | Sell
+
 let bAction = Buy
 let sAction = Sell
 
@@ -93,6 +94,7 @@ it will only accept inputs that have time Ticker.
 (*** define: singleString, define-output: singleString ***)
 
 type Ticker = Ticker of string
+
 let aTicker = Ticker "ABC"
 let (Ticker aTickerString) = aTicker
 
@@ -117,6 +119,7 @@ Create a single case discriminated union to represent a particular kind of float
 (*** define: singleFloat, define-output: singleFloat ***)
 
 type Signal = Signal of float
+
 let aSignal = Signal 1.2
 let (Signal aSignalFloat) = aSignal
 
@@ -158,11 +161,12 @@ let renaissance = HedgeFund "Renaissance Medallion"
 (**
 ## Question 5
 Define two types with the same cases.
+*)
 
-```fsharp
 type Ambiguous1 = Up | Down
 type Ambiguous2 = Up | Down
-```
+
+(**
 If you try to assign Ambiguous1 to values, 
 it can be hard for the compiler (and yourself)
 to figure out which of these types you mean. If you write `Up`
@@ -179,6 +183,7 @@ a value named `ambiguous1` and the `Up` case from Ambiguous2 to a value named
 
 type Ambiguous1 = Up | Down
 type Ambiguous2 = Up | Down
+
 let ambiguous1 = Ambiguous1.Up
 let ambiguous2 = Ambiguous2.Up
 
@@ -193,65 +198,118 @@ let ambiguous2 = Ambiguous2.Up
 (**
 ## Question 6
 Imagine that analyst recommendations have the form
-```fsharp
+*)
+
 type AnalystRec = Buy | Sell | Hold
-```
+
+(**
 You have recommendations from two analysts
-```fsharp
+*)
+
 let goldmanRec = Buy
 let barclaysRec = Sell
-```
+
+(**
 You want to act on goldman recommendations as follows:
-```fsharp
+*)
 let actionOnGoldman (x: AnalystRec) =
     match x with
     | Buy | Hold -> "I am buying this!"
     | Sell -> "I am selling this!"
-```
 
+(**
 The problem is that this `actionOnGoldman` function will
 work for both `goldmanRec` and `barclaysRec`.
-```fsharp
+*)
+
 actionOnGoldman goldmanRec // evaluates to "I am buying this!"
 actionOnGoldman barclaysRec // evaluates to "I am selling this!"
-```
 
+(**
 1. Create a single case union called `GoldmanRec` where the single case
 is GoldmanRec of AnalystRec. 
 2. Create a modified `actionOnGoldman` function called `actionOnGoldmanOnly` so that it will only work on recommendations with the type `GoldmanRec`.
 
 If `wrappedGoldmanRec` is buy `GoldmanRec`, the result should be
-```
+```fsharp
 actionOnGoldmanOnly wrappedGoldmanRec // evaluates to "I am buying this!"
 actionOnGoldmanOnly barclaysRec // compiler error.
 ```
 *)
 
 (*** include-it-raw:preDetails ***)
-(*** define: funForSingleCase, define-output: funForSingleCase ***)
 
+(*** define: funForSingleCase, define-output: funForSingleCase ***)
 type AnalystRec = Buy | Sell | Hold
 type GoldmanRec = GoldmanRec of AnalystRec
+
 let goldmanRec = Buy
 let barclaysRec = Sell
+
 let actionOnGoldman (x: AnalystRec) =
     match x with
     | Buy | Hold -> "I am buying this!"
     | Sell -> "I am selling this!"
-actionOnGoldman goldmanRec // what we want.
-actionOnGoldman barclaysRec // oops.
-// constructing it from scratch.
+(*** condition:html, include:funForSingleCase ***)
+(*** condition:html, include-fsi-output:funForSingleCase ***)
+
+(**
+What we want:
+*)
+
+(*** define: funForSingleCase1, define-output: funForSingleCase1 ***)
+actionOnGoldman goldmanRec
+(*** condition:html, include:funForSingleCase1 ***)
+(*** condition:html, include-fsi-output:funForSingleCase1 ***)
+
+(**
+Oops, we only want actionOnGoldman to work for Goldman recommendation.
+*)
+
+(*** define: funForSingleCase1, define-output: funForSingleCase1 ***)
+actionOnGoldman barclaysRec
+(*** condition:html, include:funForSingleCase1 ***)
+(*** condition:html, include-fsi-output:funForSingleCase1 ***)
+
+(**
+---
+** Actual answer starts here **
+
+Constructing created value from scratch:
+*)
+
+(*** define: funForSingleCase2, define-output: funForSingleCase2 ***)
 let wrappedGoldmanRec = GoldmanRec Buy
-// or, wrapping our previously created value
+(*** condition:html, include:funForSingleCase2 ***)
+(*** condition:html, include-fsi-output:funForSingleCase2 ***)
+
+(**
+or, wrapping our previously created value:
+*)
+
+(*** define: funForSingleCase3, define-output: funForSingleCase3 ***)
 let wrappedGoldmanRec2 = GoldmanRec goldmanRec
 wrappedGoldmanRec = wrappedGoldmanRec2 // true
-// constructing it from scratch
+(*** condition:html, include:funForSingleCase3 ***)
+(*** condition:html, include-fsi-output:funForSingleCase3 ***)
+
+(**
+Now, constructing recommendation function from scratch:
+*)
+
+(*** define: funForSingleCase4, define-output: funForSingleCase4 ***)
 let actionOnGoldmanOnly (x: GoldmanRec) =
     match x with
     | GoldmanRec Buy | GoldmanRec Hold -> "I am buying this!"
     | GoldmanRec Sell -> "I am selling this!"
-// or, unwrapping the GoldmanRec with pattern matching
-// in the input definition:
+(*** condition:html, include:funForSingleCase4 ***)
+(*** condition:html, include-fsi-output:funForSingleCase4 ***)
+
+(**
+or, constructing it from scratch with pattern matching:  
+*)
+
+(*** define: funForSingleCase5, define-output: funForSingleCase5 ***)
 let actionOnGoldmanOnly2 (GoldmanRec x) =
     // Since we unwrapped the goldman recommendation,
     // now it is just the inner analyst recommendation.
@@ -260,22 +318,41 @@ let actionOnGoldmanOnly2 (GoldmanRec x) =
     match x with
     | Buy | Hold -> "I am buying this!"
     | Sell -> "I am selling this!"
-// or, since you see above that once we unwrap the goldman rec,
-// it is the same as our orignal function.
+(*** condition:html, include:funForSingleCase5 ***)
+(*** condition:html, include-fsi-output:funForSingleCase5 ***)
+
+(**
+or, since you see above that once we unwrap the goldman rec,
+it is the same as our original function.
+*)
+
+(*** define: funForSingleCase6, define-output: funForSingleCase6 ***)
 let actionOnGoldmanOnly3 (GoldmanRec x) = actionOnGoldman x
+(*** condition:html, include:funForSingleCase6 ***)
+(*** condition:html, include-fsi-output:funForSingleCase6 ***)
 
-// check
-actionOnGoldmanOnly wrappedGoldmanRec
-actionOnGoldmanOnly2 wrappedGoldmanRec
-actionOnGoldmanOnly3 wrappedGoldmanRec
-// These would all give compiler errors. 
-// Uncomment them (delete the // at the start) to test them yourself.
-//actionOnGoldmanOnly barclaysRec
-//actionOnGoldmanOnly2 barclaysRec
-//actionOnGoldmanOnly3 barclaysRec
+(**
+Now let's check the results.
+All the alternatives should return the same result.
+*)
 
-(*** condition:html, include:funForSingleCase ***)
-(*** condition:html, include-fsi-output:funForSingleCase ***)
+(*** define: funForSingleCase7, define-output: funForSingleCase7 ***)
+let Goldman1 = actionOnGoldmanOnly wrappedGoldmanRec
+let Goldman2 = actionOnGoldmanOnly2 wrappedGoldmanRec
+let Goldman3 = actionOnGoldmanOnly3 wrappedGoldmanRec
+(*** condition:html, include:funForSingleCase7 ***)
+(*** condition:html, include-fsi-output:funForSingleCase7 ***)
+
+(**
+```fsharp
+actionOnGoldmanOnly barclaysRec //compiles to error
+actionOnGoldmanOnly2 barclaysRec //compiles to error
+actionOnGoldmanOnly3 barclaysRec //compiles to error
+```
+These would all give compiler errors. 
+So now we have what we want, actionOnGoldmanOnly only works for Goldman recommendations.
+*)
+
 (*** include-it-raw:postDetails ***)
 
 (*** condition:ipynb ***)
@@ -285,23 +362,29 @@ actionOnGoldmanOnly3 wrappedGoldmanRec
 (**
 ## Question 7
 Imagine that stock tips have the form
-```fsharp
+*)
+
 type StockTip = Buy | Sell | Hold
-```
+
+(**
 You have recommendations from two people
-```fsharp
+*)
+
 let friendRec = Buy
 let professorRec = Sell
-```
+
+(**
 You want to actions as follows:
-```fsharp
+*)
+
 let actionOnFriend (x: StockTip) = x
 let actionOnProfessor (x: StockTip) =
     match x with
     | Buy -> StockTip.Sell
     | Hold -> StockTip.Sell
     | Sell -> StockTip.Buy
-```
+
+(**
 
 1. Create a two case union called `FriendOrFoe` where the two cases are Friend of StockTip and Professor of StockTip.
 2. Create a function called `actionFriendOrFoe` that will properly handle tips from friends and tips from professors.
@@ -310,38 +393,54 @@ Show that `friendRec` and `professorRec` wrapped in the `FriendOrFoe` type are h
 *)
 
 (*** include-it-raw:preDetails ***)
-(*** define: funForTwoCases, define-output: funForTwoCases ***)
 
+(*** define: funForTwoCases, define-output: funForTwoCases ***)
 type StockTip = Buy | Sell | Hold
+
 let friendRec = Buy
 let professorRec = Sell
+
 let actionOnFriend (x: StockTip) = x
 let actionOnProfessor (x: StockTip) =
     match x with
     | Buy -> StockTip.Sell
     | Hold -> StockTip.Sell
     | Sell -> StockTip.Buy
-// or, since we're doing the same thing with a professor's
-// Buy or Hold recommendation, this could also be written
+(*** condition:html, include:funForTwoCases ***)
+(*** condition:html, include-fsi-output:funForTwoCases ***)
+
+(**
+or, since we're doing the same thing with a professor's
+Buy or Hold recommendation, this could also be written
+*)
+
+(*** define: funForTwoCases1, define-output: funForTwoCases1 ***)
 let actionOnProfessor2 (x: StockTip) =
     match x with
     | Buy | Hold -> StockTip.Sell
     | Sell -> StockTip.Buy
+
 type FriendOrFoe = 
     | Friend of StockTip
     | Professor of StockTip
+
 let wrappedFriendRec = Friend friendRec
 let wrappedProfessorRec = Professor professorRec
+
 let actionOnFriendOrFoe (x: FriendOrFoe) =
     match x with
     | Friend tip -> actionOnFriend tip
     | Professor tip -> actionOnProfessor tip 
-actionOnFriendOrFoe wrappedFriendRec // evaluates to Buy
-actionOnFriendOrFoe wrappedProfessorRec // evaluates to Buy
-actionOnFriendOrFoe (Professor Hold) // evaluates to Sell
+(*** condition:html, include:funForTwoCases1 ***)
+(*** condition:html, include-fsi-output:funForTwoCases1 ***)
 
-(*** condition:html, include:funForTwoCases ***)
-(*** condition:html, include-fsi-output:funForTwoCases ***)
+(*** define: funForTwoCases2, define-output: funForTwoCases2 ***)
+let friendOrFoe1 = actionOnFriendOrFoe wrappedFriendRec // evaluates to Buy
+let friendOrFoe2 = actionOnFriendOrFoe wrappedProfessorRec // evaluates to Buy
+let friendOrFoe3 = actionOnFriendOrFoe (Professor Hold) // evaluates to Sell
+(*** condition:html, include:funForTwoCases2 ***)
+(*** condition:html, include-fsi-output:funForTwoCases2 ***)
+
 (*** include-it-raw:postDetails ***)
 
 (*** condition:ipynb ***)

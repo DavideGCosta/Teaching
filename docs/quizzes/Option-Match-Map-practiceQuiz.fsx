@@ -679,13 +679,16 @@ type StockPriceOb =
     { Stock : string 
       Time : int
       Price : int }
+
 type TwoStocksPriceOb =
     { Time : int 
       PriceA : int option 
       PriceB : int option }
+
 let stockA = 
     [{ Stock = "A"; Time = 1; Price = 5}
      { Stock = "A"; Time = 2; Price = 6}]
+
 let stockB =     
     [{ Stock = "B"; Time = 2; Price = 5}
      { Stock = "B"; Time = 3; Price = 4}]
@@ -704,12 +707,13 @@ the `stockB` price should be `None`.
 *)
 
 (*** include-it-raw:preDetails ***)
-(*** define: TwoStockPriceOb, define-output: TwoStockPriceOb ***)    
 
+(*** define: TwoStockPriceOb, define-output: TwoStockPriceOb ***)    
 let stockbByTime = 
     stockB 
     |> List.map(fun day -> day.Time, day)
     |> Map.ofList
+
 let tslA1 =
     stockA
     |> List.map(fun dayA ->
@@ -723,7 +727,14 @@ let tslA1 =
             { Time = dayA.Time
               PriceA = Some dayA.Price 
               PriceB = Some db.Price })
-// or, just a personal preference if you like the loop or List.map
+(*** condition:html, include:TwoStockPriceOb ***)
+(*** condition:html, include-fsi-output:TwoStockPriceOb ***)
+
+(**
+or, just a personal preference if you like the loop or List.map
+*)
+
+(*** define: TwoStockPriceOb1, define-output: TwoStockPriceOb1 ***)    
 let tslA2 =
     [ for dayA in stockA do 
         let dayB = Map.tryFind dayA.Time stockbByTime
@@ -736,7 +747,14 @@ let tslA2 =
             { Time = dayA.Time
               PriceA = Some dayA.Price 
               PriceB = Some db.Price }]
-// or, define a function
+(*** condition:html, include:TwoStockPriceOb1 ***)
+(*** condition:html, include-fsi-output:TwoStockPriceOb1 ***)
+
+(**
+or, define a function
+*)
+
+(*** define: TwoStockPriceOb2, define-output: TwoStockPriceOb2 ***)    
 let tryFindBforA (dayA: StockPriceOb) =
     let dayB = Map.tryFind dayA.Time stockbByTime
     match dayB with
@@ -748,13 +766,27 @@ let tryFindBforA (dayA: StockPriceOb) =
         { Time = dayA.Time
           PriceA = Some dayA.Price 
           PriceB = Some db.Price }   
-// checkit
-tryFindBforA stockA.[0]
-// do it
-let tslA3 = stockA |> List.map tryFindBforA                         
+(*** condition:html, include:TwoStockPriceOb2 ***)
+(*** condition:html, include-fsi-output:TwoStockPriceOb2 ***)
 
-(*** condition:html, include:TwoStockPriceOb ***)
-(*** condition:html, include-fsi-output:TwoStockPriceOb ***)
+(**
+check it
+*)
+
+(*** define: TwoStockPriceOb3, define-output: TwoStockPriceOb3 ***)    
+tryFindBforA stockA.[0]  
+(*** condition:html, include:TwoStockPriceOb3 ***)
+(*** condition:html, include-fsi-output:TwoStockPriceOb3 ***)
+
+(**
+do it
+*)
+
+(*** define: TwoStockPriceOb4, define-output: TwoStockPriceOb4 ***)    
+let tslA3 = stockA |> List.map tryFindBforA   
+(*** condition:html, include:TwoStockPriceOb4 ***)
+(*** condition:html, include-fsi-output:TwoStockPriceOb4 ***)
+
 (*** include-it-raw:postDetails ***)
 
 (*** condition:ipynb ***)
@@ -776,6 +808,7 @@ let stockaByTime =
     stockA 
     |> List.map(fun day -> day.Time, day)
     |> Map.ofList
+
 let tslB =
     stockB
     |> List.map(fun dayB ->
@@ -806,12 +839,13 @@ A and B should always be something.
 *)
 
 (*** include-it-raw:preDetails ***)
-(*** define: tslC, define-output: tslC ***)    
 
+(*** define: tslC, define-output: tslC ***)    
 let stockaByTime2 = 
     stockA 
     |> List.map(fun day -> day.Time, day)
     |> Map.ofList
+
 let tslC1 =
     stockB
     |> List.choose(fun dayB ->
@@ -824,20 +858,28 @@ let tslC1 =
                   PriceA = Some da.Price 
                   PriceB = Some dayB.Price }
             Some output)
-// or, using set which I know you do not know. But #yolo
+(*** condition:html, include:tslC ***)
+(*** condition:html, include-fsi-output:tslC ***)
+
+(**
+or, using set which I know you do not know. But #yolo
+*)
+
+(*** define: tslC2, define-output: tslC2 ***)    
 let timesA = stockA |> List.map(fun x -> x.Time) |> set
 let timesB = stockB |> List.map(fun x -> x.Time) |> set
 let timesAandB = Set.intersect timesA timesB
+
 let tslC2 =
     timesAandB
     |> Set.toList
     |> List.map(fun time -> 
         { Time = time 
           PriceA = Some stockaByTime.[time].Price
-          PriceB = Some stockbByTime.[time].Price})                      
+          PriceB = Some stockbByTime.[time].Price})        
+(*** condition:html, include:tslC2 ***)
+(*** condition:html, include-fsi-output:tslC2 ***)
 
-(*** condition:html, include:tslC ***)
-(*** condition:html, include-fsi-output:tslC ***)
 (*** include-it-raw:postDetails ***)
 
 (*** condition:ipynb ***)
@@ -854,13 +896,15 @@ one of the stocks is missing for a given time, it should be None.
 *)
 
 (*** include-it-raw:preDetails ***)
-(*** define: tslD, define-output: tslD ***)    
 
+(*** define: tslD, define-output: tslD ***)    
 let stockATimes = stockA |> List.map(fun x -> x.Time)
 let stockBTimes = stockB |> List.map(fun x -> x.Time)
+
 let allTimes = 
     List.append stockATimes stockBTimes
     |> List.distinct
+
 let tslD =
     allTimes
     |> List.map(fun time ->
@@ -877,33 +921,64 @@ let tslD =
             // a Option.map can be nice.
             Map.tryFind time stockbByTime
             |> Option.map(fun b -> b.Price)
-        { Time = time; PriceA = a; PriceB = b })       
-// or, using a function. This is the same thing as in the above
-// anonymous lambda function, but I'm going to use different 
-// code to achieve the same goal just to show you different options.
-// again, it's just personal preference.
-// check how to write the function using time = 1 as a test
+        { Time = time; PriceA = a; PriceB = b })    
+(*** condition:html, include:tslD ***)
+(*** condition:html, include-fsi-output:tslD ***)
+
+(**
+or, using a function. This is the same thing as in the above
+anonymous lambda function, but I'm going to use different 
+code to achieve the same goal just to show you different options.
+again, it's just personal preference.
+check how to write the function using time = 1 as a test
+*)
+
+(*** define: tslD1, define-output: tslD1 ***)    
 let testTime = 1
+
 let time1A = Map.tryFind testTime stockaByTime
 let time1B = Map.tryFind testTime stockbByTime
+
 let time1Aprice = time1A |> Option.map(fun x -> x.Price )
 let time1Bprice = time1B |> Option.map(fun x -> x.Price)
-let testOutput = { Time = testTime; PriceA = time1Aprice; PriceB = time1Bprice }
-// now turn above code into a function to do the same thing
+
+let testOutput = { Time = testTime; PriceA = time1Aprice; PriceB = time1Bprice }   
+(*** condition:html, include:tslD1 ***)
+(*** condition:html, include-fsi-output:tslD1 ***)
+
+(**
+now turn above code into a function to do the same thing
+*)
+
+(*** define: tslD2, define-output: tslD2 ***)    
 let getTheMatch time =
     let a = Map.tryFind time stockaByTime
     let b = Map.tryFind time stockbByTime
     let aPrice = a |> Option.map(fun x -> x.Price)
     let bPrice = b |> Option.map(fun x -> x.Price)
     { Time = time; PriceA = aPrice; PriceB = bPrice }
-// test it to see that it works
+(*** condition:html, include:tslD2 ***)
+(*** condition:html, include-fsi-output:tslD2 ***)
+
+(**
+test it to see that it works
+*)
+
+(*** define: tslD3, define-output: tslD3 ***)    
 getTheMatch 1
 getTheMatch 2
-// now do it for the whole list
-let tslD2 = allTimes |> List.map getTheMatch                  
+(*** condition:html, include:tslD3 ***)
+(*** condition:html, include-fsi-output:tslD3 ***)
 
-(*** condition:html, include:tslD ***)
-(*** condition:html, include-fsi-output:tslD ***)
+(**
+now do it for the whole list
+*)
+
+(*** define: tslD4, define-output: tslD4 ***)    
+let tslD2 = allTimes |> List.map getTheMatch   
+(*** condition:html, include:tslD4 ***)
+(*** condition:html, include-fsi-output:tslD4 ***)
+
 (*** include-it-raw:postDetails ***)
 
 (*** condition:ipynb ***)

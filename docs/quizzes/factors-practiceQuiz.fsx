@@ -128,22 +128,24 @@ on SPY?
 *)
 
 (*** include-it-raw:preDetails ***)
+
+(**
+See the lecture notes for a fuller explanation:
+From the portfolio return equation, the
+hedge portfolio return is:
+
+$$r_{hedgePort} = w_{Rf} \times r_f + w_{Spy}  \times r_{Spy}$$
+$$\iff r_{hedgePort} - r_f = (w_{Spy}  + w_{Rf} - 1) \times r_f + w_{Spy}  \times ( r_{Spy}  - r_f)$$
+$$\iff r_{hedgePort} -  r_f = w_{Spy} \times ( r_{Spy}  - r_f)$$
+
+So the beta is:
+*)
+
 (*** define: BetaSPYHedgePort, define-output: BetaSPYHedgePort ***)
-
-// 3. Hedge portfolio's factor beta on SPY
-// See the lecture notes for a fuller explanation:
-//
-// From the portfolio return equation, the
-// hedge portfolio return is
-// r_hedgePort = wRf * rf + wSpy * Spy
-// =>
-// r_hedgePort - rf = (wSpy + wRf - 1) * rf + wSpy*(Spy -rf)
-// r_hedgePort - rf = wSpy*(Spy - rf)
-// So the beta is
 let hedgePortBetaOnSpy = ibmBetaOnSpy 
-
 (*** condition:html, include:BetaSPYHedgePort ***)
 (*** condition:html, include-fsi-output:BetaSPYHedgePort ***)
+
 (*** include-it-raw:postDetails ***)
 
 (*** condition:ipynb ***)
@@ -230,24 +232,31 @@ of a factor model that uses SPY as the only risk factor?
 *)
 
 (*** include-it-raw:preDetails ***)
-(*** define: IO, define-output: IO ***)
 
+(*** define: FStats***)
 #r "nuget: FSharp.Stats"
 open FSharp.Stats
+(*** condition:html, include:FStats ***)
 
+(*** define: IO, define-output: IO ***)
 let sdHedgeReturns =
     longShortPortReturns
     |> Array.map(fun x -> x.Return )
     |> Seq.stDev
-
-// Intuitively, you can think of it similar
-// to the sharpe ratio of the portfolio after
-// hedging out the factor risk.
-
-let io = alpha / sdHedgeReturns
-
 (*** condition:html, include:IO ***)
 (*** condition:html, include-fsi-output:IO ***)
+
+(**
+Intuitively, you can think of it similar
+to the sharpe ratio of the portfolio after
+hedging out the factor risk.
+*)
+
+(*** define: IO1, define-output: IO1 ***)
+let io = alpha / sdHedgeReturns
+(*** condition:html, include:IO1 ***)
+(*** condition:html, include-fsi-output:IO1 ***)
+
 (*** include-it-raw:postDetails ***)
 
 (*** condition:ipynb ***)
